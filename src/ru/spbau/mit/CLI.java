@@ -30,7 +30,9 @@ public class CLI {
             {
                 List<Command> lc = cb.buildChainOfCommand(scope, command);
                 String result = ex.exec(scope, lc);
-                System.out.println(result);
+                if (result != null) {
+                    System.out.println(result);
+                }
             }catch (Exception e)
             {
                 System.out.println(e.getMessage());

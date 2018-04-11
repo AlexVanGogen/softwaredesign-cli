@@ -24,8 +24,8 @@ public class Cd extends Command {
      * (other arguments are ignored)
      * @param scope variables created by user during session
      * @param inStream user input
-     * @return
-     * @throws IOException
+     * @return null: cd in bash doesn't print anything
+     * @throws IOException when I/O error occurs
      */
     @Override
     public String execute(Scope scope, String inStream) throws IOException {
