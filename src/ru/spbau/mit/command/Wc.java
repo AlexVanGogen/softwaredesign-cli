@@ -50,8 +50,9 @@ public class Wc extends Command{
 
         }else if (arguments.size() == 1){
 
-
             Path path = Paths.get(arguments.get(0));
+            if (!path.isAbsolute())
+                path = Paths.get(System.getProperty("user.dir") + "/" + path.toString());
             if (Files.exists(path)){
                 result = new String(Files.readAllBytes(path));
             }else{

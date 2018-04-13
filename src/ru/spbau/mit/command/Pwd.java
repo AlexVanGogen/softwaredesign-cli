@@ -23,7 +23,7 @@ public class Pwd extends Command{
      */
     @Override
     public String execute(Scope scope, String inStream) {
-        Path currentRelativePath = Paths.get("");
+        Path currentRelativePath = Paths.get(System.getProperty("user.dir"));
         return currentRelativePath.toAbsolutePath().toString();
     }
 
