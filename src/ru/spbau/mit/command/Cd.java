@@ -2,19 +2,22 @@ package ru.spbau.mit.command;
 
 import ru.spbau.mit.execute.Scope;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.NotDirectoryException;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.StringJoiner;
 
+import static ru.spbau.mit.command.FileUtils.getAppropriateFilename;
+
+/**
+ * Provides command that change current user directory.
+ */
 public class Cd extends Command {
 
-    public Cd(List<String> arguments) {
+    public Cd(List<String> arguments) throws IOException {
         super(arguments);
+
+        if (arguments.size() > 1) {
+            throw new IOException(String.format("Expected at most 1 argument, but %d arguments found.", arguments.size()));
+        }
     }
 
     /**
@@ -29,45 +32,16 @@ public class Cd extends Command {
      */
     @Override
     public String execute(Scope scope, String inStream) throws IOException {
+
         String newWorkingDirectory = "";
-        if (arguments.isEmpty() || arguments.get(0).equals("~")) {
+
+        if (arguments.isEmpty()) {
             newWorkingDirectory = System.getProperty("user.home");
-        } else if (arguments.get(0).startsWith(System.getProperty("file.separator"))) {
-            newWorkingDirectory = arguments.get(0);
         } else {
-            newWorkingDirectory = System.getProperty("user.dir") + System.getProperty("file.separator") + arguments.get(0);
+            newWorkingDirectory = getAppropriateFilename(arguments.get(0), "cd");
         }
-        newWorkingDirectory = optimizePath(newWorkingDirectory);
-        File file = new File(newWorkingDirectory);
-        if (!file.exists()) {
-            throw new NoSuchFileException(String.format("cd: %s: no such file or directory", arguments.get(0)));
-        } else if (!file.isDirectory()) {
-            throw new NotDirectoryException(String.format("cd: %s: Not a directory", arguments.get(0)));
-        }
+
         System.setProperty("user.dir", newWorkingDirectory);
         return null;
-    }
-
-    /**
-     * Deletes useless transitions such as "[directory_name]/../" from given path.
-     * @param newWorkingDirectory string representation of path that needs to be optimized
-     * @return string representation of path without useless transitions
-     */
-    private String optimizePath(String newWorkingDirectory) {
-        final String[] pathElements = newWorkingDirectory.split(System.getProperty("file.separator"));
-        final Deque<String> optimizedSetOfPathElements = new LinkedList<>();
-        for (final String pathElement : pathElements) {
-            if (pathElement.equals("..")) {
-                optimizedSetOfPathElements.pollLast();
-            } else {
-                optimizedSetOfPathElements.offerLast(pathElement);
-            }
-        }
-        if (optimizedSetOfPathElements.isEmpty()) {
-            return System.getProperty("file.separator");
-        }
-        StringJoiner optimizedPath = new StringJoiner(System.getProperty("file.separator"));
-        optimizedSetOfPathElements.forEach(optimizedPath::add);
-        return optimizedPath.toString();
     }
 }

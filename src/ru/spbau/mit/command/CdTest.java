@@ -140,7 +140,7 @@ public class CdTest {
     }
 
     @Test
-    public void testMoveToNonexistentFolder() {
+    public void testMoveToNonexistentFolder() throws IOException {
         cdCommand = new Cd(Collections.singletonList("$$$"));
         assertThrows(NoSuchFileException.class, () -> cdCommand.execute(null, null));
     }

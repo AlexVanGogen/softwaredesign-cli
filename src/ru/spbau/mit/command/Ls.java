@@ -12,6 +12,8 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static ru.spbau.mit.command.FileUtils.getAppropriateFilename;
+
 /**
  * Provides command that returns all directories and files for each given directory.
  */
@@ -33,14 +35,14 @@ public class Ls extends Command {
     public String execute(Scope scope, String inStream) throws IOException {
         String content;
         if (arguments.isEmpty()) {
-            content =  printFilenamesInSingleDirectory(System.getProperty("user.dir"));
+            content = printFilenamesInSingleDirectory(System.getProperty("user.dir"));
         } else if (arguments.size() == 1 ) {
-            content = printFilenamesInSingleDirectory(arguments.get(0));
+            content = printFilenamesInSingleDirectory(getAppropriateFilename(arguments.get(0), "ls"));
         } else {
-            StringJoiner resultMaker = new StringJoiner("\n");
+            StringJoiner resultMaker = new StringJoiner(System.getProperty("line.separator"));
             for (final String nextDirectoryName : arguments) {
                 try {
-                    final String nextDirectoryContent = printFilenamesInSingleDirectory(nextDirectoryName);
+                    final String nextDirectoryContent = printFilenamesInSingleDirectory(getAppropriateFilename(nextDirectoryName, "ls"));
                     resultMaker.add(nextDirectoryName + ":").add(nextDirectoryContent);
                 } catch (IOException e) {
                     resultMaker.add(e.getMessage());
