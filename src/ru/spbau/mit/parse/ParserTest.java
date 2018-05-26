@@ -28,7 +28,7 @@ public class ParserTest {
         // when
         List<String> tokens = parser.parse(input);
         // then
-        assertEquals(tokens.size(), 1);
+        assertEquals(tokens.size(), 0);
     }
 
     @org.junit.Test
