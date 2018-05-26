@@ -1,6 +1,5 @@
 package ru.spbau.mit.command;
 
-import com.oracle.tools.packager.IOUtils;
 import ru.spbau.mit.execute.Scope;
 import ru.spbau.mit.parse.CommandBuilder;
 

@@ -1,9 +1,7 @@
 package ru.spbau.mit.command;
 
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,9 +9,8 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CdTest {
 
@@ -87,6 +84,9 @@ public class CdTest {
 
     @Test
     public void testMoveToHomeDirectory() throws IOException {
+        if (System.getProperty("os.name").startsWith("Win")) {
+            return;
+        }
         cdCommand = new Cd(Collections.singletonList("~"));
         cdCommand.execute(null, null);
         lsCommand = new Ls(Collections.emptyList());
@@ -118,6 +118,9 @@ public class CdTest {
 
     @Test
     public void testMoveToRootDirectory() throws IOException {
+        if (System.getProperty("os.name").startsWith("Win")) {
+            return;
+        }
         cdCommand = new Cd(Collections.singletonList(System.getProperty("file.separator")));
         cdCommand.execute(null, null);
         lsCommand = new Ls(Collections.emptyList());
@@ -139,19 +142,19 @@ public class CdTest {
         }
     }
 
-    @Test
+    @Test(expected = NoSuchFileException.class)
     public void testMoveToNonexistentFolder() throws IOException {
         cdCommand = new Cd(Collections.singletonList("$$$"));
-        assertThrows(NoSuchFileException.class, () -> cdCommand.execute(null, null));
+        cdCommand.execute(null, null);
     }
 
-    @Test
+    @Test(expected = NotDirectoryException.class)
     public void testTryMoveNotToDirectory() throws IOException {
         System.setProperty("user.dir", Paths.get(".").toString());
         File tmpFile = Files.createTempFile(Paths.get("."), "file", ".txt").toFile();
         tmpFile.deleteOnExit();
         cdCommand = new Cd(Collections.singletonList(tmpFile.getName()));
-        assertThrows(NotDirectoryException.class, () -> cdCommand.execute(null, null));
+        cdCommand.execute(null, null);
     }
 
     private char getDirectoryOrderedNumber(Path path) {
